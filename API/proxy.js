@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   // ✅ باقي الكود كالمعتاد
-  const { model, prompt } = req.body;
+  const { model, input, options } = req.body;
 
   if (!model || !prompt) {
     res.status(400).json({ error: "Model and prompt are required" });
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        inputs: prompt,
+        inputs: input,
       }),
     }
   );
