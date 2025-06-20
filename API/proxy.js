@@ -1,15 +1,18 @@
 const API_Key = "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";
 
 export default async function handler(req, res) {
+  // ✅ إضافة كل Headers الخاصة بـ CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // ✅ لو الـ request نوعه OPTIONS = preflight → لازم ترجع رد فاضي
+  // ✅ مهم جدًا: لو نوع الـ Request هو OPTIONS → رجّع رد سريع بدون ما تكمل
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
-  // 1. استقبل الموديل و الـ prompt من الـ body
+
+  // ✅ باقي الكود كالمعتاد
   const { model, prompt } = req.body;
 
   if (!model || !prompt) {
@@ -17,13 +20,12 @@ export default async function handler(req, res) {
     return;
   }
 
-  // 2. ابعت request لـ Hugging Face للـ model اللي المستخدم اختاره
   const response = await fetch(
     `https://api-inference.huggingface.co/models/${model}`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer {API_Key}`,
+        Authorization: `Bearer ${API_Key}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -38,7 +40,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  // 3. رجّع الصورة للمستخدم
   const buffer = await response.arrayBuffer();
   res.setHeader("Content-Type", "image/png");
   res.send(Buffer.from(buffer));
