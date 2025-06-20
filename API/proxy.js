@@ -1,22 +1,14 @@
+import Cors from "micro-cors";
+
+const cors = Cors();
+
 const API_Key = "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";
 
-export default async function handler(req, res) {
-  // ✅ إضافة كل Headers الخاصة بـ CORS
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // ✅ مهم جدًا: لو نوع الـ Request هو OPTIONS → رجّع رد سريع بدون ما تكمل
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
-  }
-
-  // ✅ باقي الكود كالمعتاد
+async function handler(req, res) {
   const { model, input, options } = req.body;
 
-  if (!model || !prompt) {
-    res.status(400).json({ error: "Model and prompt are required" });
+  if (!model || !input) {
+    res.status(400).json({ error: "Model and inputs are required" });
     return;
   }
 
@@ -30,6 +22,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         inputs: input,
+        options: options || {},
       }),
     }
   );
@@ -44,3 +37,5 @@ export default async function handler(req, res) {
   res.setHeader("Content-Type", "image/png");
   res.send(Buffer.from(buffer));
 }
+
+export default cors(handler);
