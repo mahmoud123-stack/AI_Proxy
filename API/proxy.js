@@ -9,7 +9,6 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
-
   // 1. استقبل الموديل و الـ prompt من الـ body
   const { model, prompt } = req.body;
 
